@@ -267,6 +267,14 @@
     <div class="admin-filters">
       <select id="branchFilter"><option value="">All branches</option></select>
       <select id="coffeeFilter"><option value="">All coffees</option></select>
+      <select id="drinkTypeFilter">
+        <option value="">All drink types</option>
+        <option value="ESPRESSO">ESPRESSO</option>
+        <option value="HOT COFFEEDAY GUJI">HOT COFFEEDAY GUJI</option>
+        <option value="ICE COFFEEDAY GUJI">ICE COFFEEDAY GUJI</option>
+        <option value="HOT V60">HOT V60</option>
+        <option value="ICE V60">ICE V60</option>
+      </select>
       <input type="date" id="dateFilter">
       <button type="button" class="secondary" id="clearFilterBtn">Clear filters</button>
       <button type="button" class="secondary" id="refreshEntriesBtn">Refresh</button>
@@ -631,6 +639,7 @@ async function loadAllEntries(){
 
     const branchVal = document.getElementById('branchFilter').value;
     const coffeeVal = document.getElementById('coffeeFilter').value;
+    const drinkTypeVal = document.getElementById('drinkTypeFilter').value;
     const dateVal = document.getElementById('dateFilter').value;
 
     // Apply Branch Filter
@@ -640,6 +649,10 @@ async function loadAllEntries(){
     // Apply Coffee Filter
     if(coffeeVal){
       rows = rows.filter(r => (r.coffeeName || '').trim().toLowerCase() === coffeeVal.trim().toLowerCase());
+    }
+    // Apply Drink Type Filter
+    if(drinkTypeVal){
+      rows = rows.filter(r => (r.method || '').trim().toLowerCase() === drinkTypeVal.trim().toLowerCase());
     }
     // Apply Date Filter
     if(dateVal){
@@ -695,10 +708,12 @@ async function loadAllEntries(){
 document.getElementById('refreshEntriesBtn').addEventListener('click', loadAllEntries);
 document.getElementById('branchFilter').addEventListener('change', loadAllEntries);
 document.getElementById('coffeeFilter').addEventListener('change', loadAllEntries);
+document.getElementById('drinkTypeFilter').addEventListener('change', loadAllEntries);
 document.getElementById('dateFilter').addEventListener('change', loadAllEntries);
 document.getElementById('clearFilterBtn').addEventListener('click', ()=>{
   document.getElementById('branchFilter').value = '';
   document.getElementById('coffeeFilter').value = '';
+  document.getElementById('drinkTypeFilter').value = '';
   document.getElementById('dateFilter').value = '';
   loadAllEntries();
 });
