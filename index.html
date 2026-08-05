@@ -98,7 +98,7 @@
   .del-btn{background:none;border:none;color:var(--alert);cursor:pointer;font-size:12px;font-weight:700;text-decoration:underline;font-family:Georgia,serif;}
   .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;}
 
-  .admin-filters{display:flex;gap:10px;margin:0 16px 14px;flex-wrap:wrap;}
+  .admin-filters{display:flex;gap:10px;margin:0 16px 14px;flex-wrap:wrap;align-items:center;}
   .admin-filters select,.admin-filters input{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 12px;font-size:13px;font-family:Georgia,serif;color:var(--green);}
 
   .names-manager{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
@@ -111,8 +111,6 @@
   .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--green);color:var(--beige);padding:13px 20px;border-radius:10px;font-size:13.5px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .25s;z-index:50;max-width:90%;text-align:center;}
   .toast.show{opacity:1;transform:translate(-50%,0);}
   .toast.err{background:var(--alert);}
-  .config-hint{margin:14px 16px 0;font-size:12px;color:var(--ink-soft);background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;}
-  .config-hint code{background:var(--beige-2);padding:1px 5px;border-radius:4px;}
 </style>
 </head>
 <body>
@@ -171,7 +169,7 @@
     <!-- Water Quality -->
     <div class="card" id="wqCard">
       <h3>1. Today's Water Quality</h3>
-      <p class="hint" id="wqHint">Enter today's readings once — used automatically for every recipe entry below[cite: 2].</p>
+      <p class="hint" id="wqHint">Enter today's readings once — used automatically for every recipe entry below.</p>
 
       <div id="wqForm">
         <div class="row">
@@ -195,7 +193,7 @@
     <!-- Recipe Entry -->
     <div class="card" id="recipeCard" style="display:none;">
       <h3>2. Add Coffee Recipe Entry</h3>
-      <p class="hint">Select method &amp; coffee, then fill in the recipe numbers[cite: 2].</p>
+      <p class="hint">Select method &amp; coffee, then fill in the recipe numbers.</p>
 
       <label>Drink Type</label>
       <select id="drinkTypeSelect" style="margin-bottom:14px;">
@@ -252,13 +250,13 @@
     <header>
       <div class="eyebrow">Admin Only</div>
       <h1>Coffee Quality — All Branches</h1>
-      <p>Live data from every branch, pulled from Firebase[cite: 2].</p>
+      <p>Live data from every branch, pulled from Firebase.</p>
     </header>
 
     <!-- Coffee name manager -->
     <div class="card">
       <h3>Manage Coffee Names</h3>
-      <p class="hint">Add or remove coffee names — updates instantly for every branch's dropdown[cite: 2].</p>
+      <p class="hint">Add or remove coffee names — updates instantly for every branch's dropdown.</p>
       <div class="names-manager" id="namesManager"></div>
       <div class="add-name-row">
         <input type="text" id="newCoffeeName" placeholder="e.g. COLOMBIA HUILA">
@@ -268,6 +266,7 @@
 
     <div class="admin-filters">
       <select id="branchFilter"><option value="">All branches</option></select>
+      <select id="coffeeFilter"><option value="">All coffees</option></select>
       <input type="date" id="dateFilter">
       <button type="button" class="secondary" id="clearFilterBtn">Clear filters</button>
       <button type="button" class="secondary" id="refreshEntriesBtn">Refresh</button>
@@ -395,6 +394,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', async (e)=>
     document.getElementById('adminApp').style.display = 'block';
     document.getElementById('sessionAdminName').textContent = 'Owner / Admin — All Branches';
     populateBranchFilter();
+    await populateCoffeeFilter();
     await loadCoffeeNamesAdmin();
     await loadAllEntries();
   } else {
@@ -414,6 +414,12 @@ function populateBranchFilter(){
     opt.value = b.branch; opt.textContent = b.branch;
     sel.appendChild(opt);
   });
+}
+
+async function populateCoffeeFilter(){
+  const names = await getCoffeeNamesDoc();
+  const sel = document.getElementById('coffeeFilter');
+  sel.innerHTML = '<option value="">All coffees</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
 }
 
 // ===== COFFEE NAMES =====
@@ -445,6 +451,7 @@ async function loadCoffeeNamesAdmin(){
       const ref = doc(db, "settings", CONFIG.SETTINGS_DOC);
       await setDoc(ref, { names: arrayRemove(btn.dataset.name) }, { merge: true });
       await loadCoffeeNamesAdmin();
+      await populateCoffeeFilter();
       showToast('Coffee name removed');
     });
   });
@@ -458,6 +465,7 @@ document.getElementById('addCoffeeNameBtn').addEventListener('click', async ()=>
   await setDoc(ref, { names: arrayUnion(name) }, { merge: true });
   input.value = '';
   await loadCoffeeNamesAdmin();
+  await populateCoffeeFilter();
   showToast('Coffee name added!');
 });
 
@@ -613,7 +621,7 @@ async function loadTodayEntries(){
   `).join('');
 }
 
-// ===== ADMIN: ALL ENTRIES TABLE (Client-side filtering to prevent index errors) =====
+// ===== ADMIN: ALL ENTRIES TABLE (Client-side filtering) =====
 async function loadAllEntries(){
   const tbody = document.getElementById('adminTbody');
   tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;">Loading…</td></tr>';
@@ -622,11 +630,16 @@ async function loadAllEntries(){
     let rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
     const branchVal = document.getElementById('branchFilter').value;
+    const coffeeVal = document.getElementById('coffeeFilter').value;
     const dateVal = document.getElementById('dateFilter').value;
 
     // Apply Branch Filter
     if(branchVal){
       rows = rows.filter(r => (r.branch || '').trim().toLowerCase() === branchVal.trim().toLowerCase());
+    }
+    // Apply Coffee Filter
+    if(coffeeVal){
+      rows = rows.filter(r => (r.coffeeName || '').trim().toLowerCase() === coffeeVal.trim().toLowerCase());
     }
     // Apply Date Filter
     if(dateVal){
@@ -681,9 +694,11 @@ async function loadAllEntries(){
 
 document.getElementById('refreshEntriesBtn').addEventListener('click', loadAllEntries);
 document.getElementById('branchFilter').addEventListener('change', loadAllEntries);
+document.getElementById('coffeeFilter').addEventListener('change', loadAllEntries);
 document.getElementById('dateFilter').addEventListener('change', loadAllEntries);
 document.getElementById('clearFilterBtn').addEventListener('click', ()=>{
   document.getElementById('branchFilter').value = '';
+  document.getElementById('coffeeFilter').value = '';
   document.getElementById('dateFilter').value = '';
   loadAllEntries();
 });
