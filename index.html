@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coffee Water Quality &amp; Recipe — Coffee Shop</title>
+<title>Lost &amp; Found — Coffee Shop</title>
 <style>
   :root{
     --green:#1F3B2C;
@@ -22,22 +22,33 @@
     --ink-soft:#5C5540;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--beige);color:var(--green);font-family:Georgia,'Times New Roman',serif;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:960px;margin:0 auto;padding:0 0 60px;}
-  header{background:var(--green);color:var(--beige);padding:28px 24px 34px;position:relative;overflow:hidden;}
-  header::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,var(--accent-light) 0%, transparent 70%);opacity:.30;}
+  body{
+    margin:0;background:var(--beige);color:var(--green);
+    font-family:Georgia, 'Times New Roman', serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 0 60px;}
+  header{
+    background:var(--green);color:var(--beige);
+    padding:28px 24px 34px;position:relative;overflow:hidden;
+  }
+  header::after{
+    content:"";position:absolute;right:-40px;top:-40px;
+    width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle,var(--accent-light) 0%, transparent 70%);opacity:.30;
+  }
   .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-light);font-weight:700;margin-bottom:6px;}
-  h1{font-size:28px;margin:0 0 6px;line-height:1.1;}
-  header p{margin:0;color:var(--beige-2);font-size:14px;max-width:560px;}
+  h1{font-size:30px;margin:0 0 6px;line-height:1.1;}
+  header p{margin:0;color:var(--beige-2);font-size:14.5px;max-width:520px;}
 
-  /* Login */
+  /* ===== LOGIN ===== */
   #loginOverlay{position:fixed;inset:0;background:var(--green);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
   .login-card{background:var(--beige);border-radius:16px;padding:34px 28px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3);text-align:center;}
   .login-card h2{font-size:22px;margin:0 0 4px;color:var(--green);}
   .login-card p.sub{font-size:13px;color:var(--ink-soft);margin:0 0 22px;}
   .login-card label{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;text-align:left;}
-  .login-card input{width:100%;border:1.5px solid var(--line);background:var(--beige-2);border-radius:10px;padding:11px 12px;font-size:14.5px;font-family:Georgia,serif;color:var(--green);margin-bottom:14px;outline:none;}
-  .login-card input:focus{border-color:var(--accent);}
+  .login-card input,.login-card select{width:100%;border:1.5px solid var(--line);background:var(--beige-2);border-radius:10px;padding:11px 12px;font-size:14.5px;font-family:Georgia,serif;color:var(--green);margin-bottom:14px;outline:none;}
+  .login-card input:focus,.login-card select:focus{border-color:var(--accent);}
   .login-btn{width:100%;background:var(--green);color:var(--beige);border:none;border-radius:10px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:Georgia,serif;}
   .login-btn:hover{background:var(--green-deep);}
   .login-error{display:none;background:var(--alert-bg);color:var(--alert);border:1px solid #D9B9B4;border-radius:8px;padding:9px 12px;font-size:12.5px;margin-bottom:14px;}
@@ -53,64 +64,86 @@
   .session-bar button{background:transparent;border:1px solid var(--beige-2);color:var(--beige-2);border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:Georgia,serif;}
   .session-bar button:hover{background:var(--beige-2);color:var(--green-deep);}
 
-  .card{background:#fff;margin:-18px 16px 18px;border-radius:16px;box-shadow:0 10px 30px rgba(31,59,44,.10);border:1px solid var(--line);overflow:hidden;position:relative;z-index:1;padding:20px 22px;}
-  .card h3{margin:0 0 4px;font-size:16px;color:var(--accent);}
-  .card p.hint{margin:0 0 16px;font-size:12.5px;color:var(--ink-soft);}
-
-  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
-  .row.two{grid-template-columns:1fr 1fr;}
+  /* ===== SUBMISSION FORM (staff) ===== */
+  .form-card{background:#fff;margin:-18px 16px 18px;border-radius:16px;box-shadow:0 10px 30px rgba(31,59,44,.10);border:1px solid var(--line);overflow:hidden;position:relative;z-index:1;}
+  form{padding:4px 4px 4px;}
+  fieldset{border:none;padding:20px 22px 6px;margin:0;}
+  legend{font-weight:700;font-size:15px;color:var(--accent);padding:0;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  legend .num{width:22px;height:22px;border-radius:6px;background:var(--green);color:var(--beige);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
   .row.single{grid-template-columns:1fr;}
-  @media(max-width:640px){.row,.row.two{grid-template-columns:1fr;}}
+  @media(max-width:520px){.row{grid-template-columns:1fr;}}
 
-  label{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
-  input[type=text],input[type=number],input[type=date],select{
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+  label .req{color:var(--alert);}
+  input[type=text],input[type=tel],input[type=date],input[type=time],select,textarea{
     width:100%;border:1.5px solid var(--line);background:var(--beige-2);border-radius:10px;
-    padding:10px 12px;font-size:14.5px;font-family:Georgia,serif;color:var(--green);outline:none;
+    padding:11px 12px;font-size:14.5px;font-family:Georgia, serif;color:var(--green);outline:none;transition:border-color .15s;
   }
-  input:focus,select:focus{border-color:var(--accent);}
-  input[readonly]{background:var(--ok-bg);color:var(--ok);font-weight:700;}
+  textarea{resize:vertical;min-height:70px;}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 
-  button.primary{background:var(--green);color:var(--beige);border:none;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:Georgia,serif;}
-  button.primary:hover{background:var(--green-deep);}
-  button.primary:disabled{opacity:.6;cursor:not-allowed;}
-  button.secondary{background:#fff;border:1.5px solid var(--line);color:var(--green);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:Georgia,serif;}
-  button.secondary:hover{border-color:var(--accent);}
+  .cat-choice{display:flex;gap:10px;margin-bottom:14px;}
+  .cat-btn{flex:1;border:1.5px solid var(--line);background:var(--beige-2);border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink-soft);transition:all .15s;}
+  .cat-btn.active-exp{border-color:var(--alert);background:var(--alert-bg);color:var(--alert);}
+  .cat-btn.active-ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);}
 
-  .wq-summary{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
-  .wq-pill{background:var(--ok-bg);color:var(--ok);border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;flex:1;min-width:110px;text-align:center;}
-  .wq-pill span{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:3px;}
+  .policy-note{display:none;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;margin-bottom:14px;font-weight:500;}
+  .policy-note.show{display:block;}
+  .policy-note.exp{background:var(--alert-bg);color:var(--alert);border:1px solid #D9B9B4;}
+  .policy-note.ok{background:var(--ok-bg);color:var(--ok);border:1px solid #BFD4C4;}
 
-  .coffee-select-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:14px;}
-  .coffee-select-row select{flex:1;}
+  .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+  @media(max-width:520px){.photo-row{grid-template-columns:1fr;}}
+  .photo-box{border:1.5px dashed var(--line);border-radius:12px;background:var(--beige-2);text-align:center;padding:14px;cursor:pointer;position:relative;overflow:hidden;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .photo-box:hover{border-color:var(--accent);}
+  .photo-box input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .photo-box .ic{font-size:22px;margin-bottom:6px;}
+  .photo-box span{font-size:12.5px;color:var(--ink-soft);font-weight:700;}
+  .photo-box img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .photo-box .badge{position:absolute;bottom:6px;right:6px;background:var(--ok);color:#fff;font-size:10.5px;padding:3px 7px;border-radius:20px;font-weight:700;z-index:2;}
 
-  .entries-list{margin-top:10px;}
-  table{width:100%;border-collapse:collapse;font-size:12.5px;}
-  th{background:var(--green);color:var(--beige);text-align:left;padding:9px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
-  td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
-  tr:last-child td{border-bottom:none;}
-  .pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;}
-  .pill.method-ESPRESSO{background:#DCEEDD;color:var(--green-deep);}
-  .pill.method-HOT-COFFEEDAY-GUJI{background:var(--accent-light);color:var(--green-deep);}
-  .pill.method-ICE-COFFEEDAY-GUJI{background:#2B3B55;color:#fff;}
-  .pill.method-HOT-V60{background:#F5E7A8;color:var(--green-deep);}
-  .pill.method-ICE-V60{background:#C9DCEF;color:var(--green-deep);}
-  .pill.coffee-name{background:var(--ok-bg);color:var(--ok);}
-  .del-btn{background:none;border:none;color:var(--alert);cursor:pointer;font-size:12px;font-weight:700;text-decoration:underline;font-family:Georgia,serif;}
-  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;}
+  .submit-bar{padding:18px 22px 24px;}
+  button.submit{width:100%;background:var(--green);color:var(--beige);border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;}
+  button.submit:hover{background:var(--green-deep);}
+  button.submit:disabled{opacity:.6;cursor:not-allowed;}
 
-  .admin-filters{display:flex;gap:10px;margin:0 16px 14px;flex-wrap:wrap;align-items:center;}
-  .admin-filters select,.admin-filters input{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 12px;font-size:13px;font-family:Georgia,serif;color:var(--green);}
-
-  .names-manager{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
-  .name-tag{background:var(--beige-2);border:1px solid var(--line);border-radius:20px;padding:6px 8px 6px 14px;font-size:12.5px;display:flex;align-items:center;gap:8px;}
-  .name-tag button{background:var(--alert);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:1;}
-  .add-name-row{display:flex;gap:8px;}
-  .add-name-row input{flex:1;}
-
-  .empty{text-align:center;padding:40px 20px;color:var(--ink-soft);font-size:13.5px;}
   .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--green);color:var(--beige);padding:13px 20px;border-radius:10px;font-size:13.5px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .25s;z-index:50;max-width:90%;text-align:center;}
   .toast.show{opacity:1;transform:translate(-50%,0);}
   .toast.err{background:var(--alert);}
+
+  /* ===== ADMIN REPORTS VIEW ===== */
+  .tabs{display:flex;gap:8px;margin:-18px 16px 16px;position:relative;z-index:1;}
+  .tab{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink-soft);box-shadow:0 6px 16px rgba(31,59,44,.06);}
+  .tab .count{display:block;font-size:20px;margin-top:2px;}
+  .tab.active{background:var(--green);color:var(--beige);border-color:var(--green);}
+  .tab.active .count{color:var(--accent-light);}
+
+  .refresh-row{display:flex;justify-content:space-between;align-items:center;margin:0 16px 12px;font-size:12px;color:var(--ink-soft);}
+  .refresh-row button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;color:var(--green);cursor:pointer;font-family:Georgia,serif;}
+  .refresh-row button:hover{border-color:var(--accent);}
+
+  .cards{padding:0 16px;display:flex;flex-direction:column;gap:12px;}
+  .report-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 6px 18px rgba(31,59,44,.06);}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;}
+  .card-title{font-size:16px;font-weight:700;margin:0;}
+  .status-pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em;}
+  .status-pill.overdue{background:var(--alert-bg);color:var(--alert);}
+  .status-pill.pending{background:var(--pending-bg);color:var(--pending);}
+  .status-pill.done{background:var(--ok-bg);color:var(--ok);}
+
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:13px;color:var(--ink-soft);margin-bottom:10px;}
+  .meta-grid div strong{color:var(--green);}
+  .time-note{font-size:12.5px;padding:8px 10px;border-radius:8px;margin-bottom:10px;}
+  .time-note.overdue{background:var(--alert-bg);color:var(--alert);}
+  .time-note.pending{background:var(--pending-bg);color:var(--pending);}
+  .time-note.done{background:var(--ok-bg);color:var(--ok);}
+
+  .photo-links{display:flex;gap:10px;}
+  .photo-links a{font-size:12px;color:var(--accent);text-decoration:underline;font-weight:700;}
+
+  .empty{text-align:center;padding:50px 20px;color:var(--ink-soft);font-size:14px;}
+  .loading{text-align:center;padding:50px 20px;color:var(--ink-soft);font-size:14px;}
 </style>
 </head>
 <body>
@@ -119,14 +152,14 @@
 <div id="loginOverlay">
   <div class="login-card">
     <div class="login-panel show" id="staffPanel">
-      <h2>Coffee Quality Log</h2>
-      <p class="sub">Sign in with your branch login</p>
+      <h2>Lost &amp; Found</h2>
+      <p class="sub">Sign in with your branch login to file a report</p>
       <div class="login-error" id="staffLoginError">Incorrect username or password.</div>
       <form id="staffLoginForm">
         <label>Username</label>
         <input type="text" id="staffUser" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
         <label>Password</label>
-        <input type="password" id="staffPass" autocomplete="current-password" required>
+        <input type="password" id="staffPass" inputmode="numeric" autocomplete="current-password" required>
         <button type="submit" class="login-btn">Sign In</button>
       </form>
       <div class="login-toggle">
@@ -137,7 +170,7 @@
 
     <div class="login-panel" id="adminPanel">
       <h2>Admin Login</h2>
-      <p class="sub">Owner / Admin sign in — view all branches</p>
+      <p class="sub">Owner / Admin sign in — view all reports</p>
       <div class="login-error" id="adminLoginError">Incorrect username or password.</div>
       <form id="adminLoginForm">
         <label>Username</label>
@@ -153,7 +186,7 @@
   </div>
 </div>
 
-<!-- ===================== STAFF APP ===================== -->
+<!-- ===================== STAFF: SUBMIT REPORT ===================== -->
 <div id="staffApp">
   <div class="session-bar">
     <span>Logged in as: <strong id="sessionBranchName">—</strong></span>
@@ -162,85 +195,131 @@
   <div class="wrap">
     <header>
       <div class="eyebrow">Staff Use Only</div>
-      <h1>Coffee Water Quality &amp; Recipe</h1>
-      <p>Log today's water quality once, then add each coffee recipe reading — all saved to Firebase.</p>
+      <h1>Lost &amp; Found Tracker</h1>
+      <p>Fill out this form whenever a customer's item is found — saved directly to Firebase.</p>
     </header>
 
-    <!-- Water Quality -->
-    <div class="card" id="wqCard">
-      <h3>1. Today's Water Quality</h3>
-      <p class="hint" id="wqHint">Enter today's readings once — used automatically for every recipe entry below.</p>
+    <div class="form-card">
+      <form id="lfForm">
+        <fieldset>
+          <legend><span class="num">1</span>Report Details</legend>
+          <div class="row">
+            <div>
+              <label>Branch <span class="req">*</span></label>
+              <select id="branch" required><option value="">Select branch</option></select>
+            </div>
+            <div>
+              <label>Filed By <span class="req">*</span></label>
+              <input type="text" id="filedBy" placeholder="Enter name" required>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Date Item Was Found <span class="req">*</span></label>
+              <input type="date" id="date" required>
+            </div>
+            <div>
+              <label>Time Item Was Found <span class="req">*</span></label>
+              <input type="time" id="time" required>
+            </div>
+          </div>
+          <div class="row single">
+            <div>
+              <label>Place / Table Where Found <span class="req">*</span></label>
+              <input type="text" id="place" placeholder="e.g. Table 4, Near Counter" required>
+            </div>
+          </div>
+        </fieldset>
 
-      <div id="wqForm">
-        <div class="row">
-          <div><label>TDS (100–120)</label><input type="number" step="any" id="tds" placeholder="e.g. 110"></div>
-          <div><label>pH (6.5–8)</label><input type="number" step="any" id="ph" placeholder="e.g. 7.5"></div>
-          <div><label>Temp (20–28°C)</label><input type="number" step="any" id="temp" placeholder="e.g. 24"></div>
+        <fieldset>
+          <legend><span class="num">2</span>Employee Who Reported</legend>
+          <div class="row">
+            <div>
+              <label>Employee Name <span class="req">*</span></label>
+              <input type="text" id="empName" required>
+            </div>
+            <div>
+              <label>Employee ID <span class="req">*</span></label>
+              <input type="text" id="empId" required>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="num">3</span>Item Details</legend>
+          <div class="row single">
+            <div>
+              <label>Item Description <span class="req">*</span></label>
+              <input type="text" id="itemDesc" placeholder="e.g. iPhone 14, Charger" required>
+            </div>
+          </div>
+          <label>Item Category <span class="req">*</span></label>
+          <div class="cat-choice">
+            <div class="cat-btn" data-cat="expensive" onclick="selectCategory('expensive')">Expensive<br><span style="font-weight:400;font-size:11.5px;">Mobile / iPad / Laptop</span></div>
+            <div class="cat-btn" data-cat="normal" onclick="selectCategory('normal')">Not Expensive<br><span style="font-weight:400;font-size:11.5px;">Other items</span></div>
+          </div>
+          <div class="policy-note exp" id="noteExp">
+            Expensive item policy: Hold for at least <strong>48 hours</strong>. Manager must verify before handover.
+          </div>
+          <div class="policy-note ok" id="noteOk">
+            Normal item policy: Hold for <strong>14 days</strong>. Then handover to Management.
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="num">4</span>Customer Details</legend>
+          <div class="row single">
+            <div>
+              <label>Customer Contact Number <span class="req">*</span></label>
+              <input type="tel" id="custPhone" placeholder="10-digit mobile number" required>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="num">5</span>Live Photos</legend>
+          <div class="photo-row">
+            <label class="photo-box" id="boxItem">
+              <input type="file" accept="image/*" capture="environment" id="itemPhoto">
+              <div class="ic">📷</div>
+              <span>Item Photo</span>
+            </label>
+            <label class="photo-box" id="boxPlace">
+              <input type="file" accept="image/*" capture="environment" id="placePhoto">
+              <div class="ic">📍</div>
+              <span>Location Photo</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="num">6</span>Status &amp; Notes</legend>
+          <div class="row">
+            <div>
+              <label>Current Status <span class="req">*</span></label>
+              <select id="status" required>
+                <option value="Pending">Pending (On Hold)</option>
+                <option value="Returned to Customer">Returned to Customer</option>
+                <option value="Handed to Management">Handed to Management</option>
+                <option value="Disposed">Disposed</option>
+              </select>
+            </div>
+            <div>
+              <label>Extra Notes (Optional)</label>
+              <input type="text" id="notes" placeholder="Any additional details...">
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="submit-bar">
+          <button type="submit" class="submit" id="submitBtn">Submit Report →</button>
         </div>
-        <button type="button" class="primary" id="saveWQBtn">Save Water Quality</button>
-      </div>
-
-      <div id="wqDisplay" style="display:none;">
-        <div class="wq-summary">
-          <div class="wq-pill"><span>TDS</span><span id="wqTdsShow">-</span></div>
-          <div class="wq-pill"><span>pH</span><span id="wqPhShow">-</span></div>
-          <div class="wq-pill"><span>Temp</span><span id="wqTempShow">-</span></div>
-        </div>
-        <button type="button" class="secondary" id="editWQBtn">Edit Today's Readings</button>
-      </div>
-    </div>
-
-    <!-- Recipe Entry -->
-    <div class="card" id="recipeCard" style="display:none;">
-      <h3>2. Add Coffee Recipe Entry</h3>
-      <p class="hint">Select method &amp; coffee, then fill in the recipe numbers.</p>
-
-      <label>Drink Type</label>
-      <select id="drinkTypeSelect" style="margin-bottom:14px;">
-        <option value="">Select drink type</option>
-        <option value="ESPRESSO">ESPRESSO</option>
-        <option value="HOT COFFEEDAY GUJI">HOT COFFEEDAY GUJI</option>
-        <option value="ICE COFFEEDAY GUJI">ICE COFFEEDAY GUJI</option>
-        <option value="HOT V60">HOT V60</option>
-        <option value="ICE V60">ICE V60</option>
-      </select>
-
-      <label>Coffee Name</label>
-      <div class="coffee-select-row">
-        <select id="coffeeNameSelect"><option value="">Select coffee</option></select>
-        <button type="button" class="secondary" id="refreshNamesBtn" title="Refresh list">⟳</button>
-      </div>
-
-      <div class="row">
-        <div><label>Water Volume (ml)</label><input type="number" step="any" id="waterVolume" placeholder="e.g. 300"></div>
-        <div><label>Coffee (g)</label><input type="number" step="any" id="coffeeGrams" placeholder="e.g. 18"></div>
-        <div><label>Puls</label><input type="number" step="any" id="puls" placeholder="e.g. 6"></div>
-      </div>
-      <div class="row">
-        <div><label>Extraction Time</label><input type="text" id="extractionTime" placeholder="e.g. 02:30 or 30"></div>
-        <div><label>Extraction (ml)</label><input type="number" step="any" id="extractionMl" placeholder="e.g. 250"></div>
-        <div><label>Coffee Ratio</label><input type="text" id="coffeeRatio" readonly placeholder="Auto"></div>
-      </div>
-
-      <button type="button" class="primary" id="addEntryBtn">Add Entry →</button>
-    </div>
-
-    <!-- Today's entries for this branch -->
-    <div class="card" id="entriesCard" style="display:none;">
-      <h3>Today's Entries — <span id="entriesBranchLabel"></span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th></tr>
-          </thead>
-          <tbody id="entriesTbody"></tbody>
-        </table>
-      </div>
+      </form>
     </div>
   </div>
 </div>
 
-<!-- ===================== ADMIN APP ===================== -->
+<!-- ===================== ADMIN: VIEW REPORTS ===================== -->
 <div id="adminApp">
   <div class="session-bar">
     <span>Viewing: <strong id="sessionAdminName">—</strong></span>
@@ -249,44 +328,24 @@
   <div class="wrap">
     <header>
       <div class="eyebrow">Admin Only</div>
-      <h1>Coffee Quality — All Branches</h1>
-      <p>Live data from every branch, pulled from Firebase.</p>
+      <h1>Lost &amp; Found Reports</h1>
+      <p>Live status pulled from Firebase.</p>
     </header>
 
-    <!-- Coffee name manager -->
-    <div class="card">
-      <h3>Manage Coffee Names</h3>
-      <p class="hint">Add or remove coffee names — updates instantly for every branch's dropdown.</p>
-      <div class="names-manager" id="namesManager"></div>
-      <div class="add-name-row">
-        <input type="text" id="newCoffeeName" placeholder="e.g. COLOMBIA HUILA">
-        <button type="button" class="primary" id="addCoffeeNameBtn">Add</button>
-      </div>
+    <div class="tabs">
+      <div class="tab active" data-filter="all">All<span class="count" id="countAll">0</span></div>
+      <div class="tab" data-filter="pending">Pending<span class="count" id="countPending">0</span></div>
+      <div class="tab" data-filter="overdue">Overdue<span class="count" id="countOverdue">0</span></div>
+      <div class="tab" data-filter="done">Done<span class="count" id="countDone">0</span></div>
     </div>
 
-    <div class="admin-filters">
-      <select id="branchFilter"><option value="">All branches</option></select>
-      <select id="coffeeFilter"><option value="">All coffees</option></select>
-      <select id="drinkTypeFilter">
-        <option value="">All drink types</option>
-        <option value="ESPRESSO">ESPRESSO</option>
-        <option value="HOT COFFEEDAY GUJI">HOT COFFEEDAY GUJI</option>
-        <option value="ICE COFFEEDAY GUJI">ICE COFFEEDAY GUJI</option>
-        <option value="HOT V60">HOT V60</option>
-        <option value="ICE V60">ICE V60</option>
-      </select>
-      <input type="date" id="dateFilter">
-      <button type="button" class="secondary" id="clearFilterBtn">Clear filters</button>
-      <button type="button" class="secondary" id="refreshEntriesBtn">Refresh</button>
+    <div class="refresh-row">
+      <span id="lastUpdated">Not loaded yet</span>
+      <button type="button" id="refreshBtn">Refresh</button>
     </div>
 
-    <div class="table-wrap" style="margin:0 16px;">
-      <table>
-        <thead>
-          <tr><th>Date</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th><th></th></tr>
-        </thead>
-        <tbody id="adminTbody"></tbody>
-      </table>
+    <div class="cards" id="cardsContainer">
+      <div class="loading">Loading reports…</div>
     </div>
   </div>
 </div>
@@ -294,60 +353,48 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-// ============= CONFIG — ENTER YOUR DETAILS HERE =============
 const CONFIG = {
   FIREBASE_CONFIG: {
-    apiKey: "AIzaSyC5Vc_mLJsVVBQl3BB-KWgdTn83AfZyXnE",
-    authDomain: "operationdep.firebaseapp.com",
-    projectId: "operationdep",
-    storageBucket: "operationdep.firebasestorage.app",
-    messagingSenderId: "1076458533093",
-    appId: "1:1076458533093:web:d2e1512ac9fc3f0be6640c"
+    apiKey: "AIzaSyAD9ozjuex9ccfqts5CdV8wlp7KT8i1PG4",
+    authDomain: "sakuralostfind.firebaseapp.com",
+    projectId: "sakuralostfind",
+    storageBucket: "sakuralostfind.firebasestorage.app",
+    messagingSenderId: "1037213422634",
+    appId: "1:1037213422634:web:6bad0b03a0acee308d1f53"
   },
-
-  ENTRIES_COLLECTION: "coffeeEntries",
-  WATER_QUALITY_COLLECTION: "waterQuality",
-  SETTINGS_DOC: "coffeeSettings",
-
-  BRANCH_LOGINS: [
-    { username: "sadyan", password: "10234", branch: "Sadyan branch" },
-    { username: "jamyeen", password: "20456", branch: "Jamyeen branch" },
-    { username: "wadi", password: "30678", branch: "Wadi branch" },
-    { username: "magic", password: "40891", branch: "Magic fair branch" },
-    { username: "fajer", password: "50123", branch: "Fajer branch" },
-    { username: "madina", password: "60345", branch: "Madina branch" },
-    { username: "nugra", password: "70567", branch: "Nugra branch" },
-    { username: "rajhi", password: "80789", branch: "Rajhi branch" }
-  ],
-
-  ADMIN_LOGIN: { username: "admin", password: "op998800" },
-
-  DEFAULT_COFFEE_NAMES: ["ETHIOPIA GUJI", "ETHIOPIA GELCA", "ZURI UGANDA", "GUJI,YEMEN,ERUFIGIO"]
+  COLLECTION: "lostFoundReports",
+  BRANCHES_COLLECTION: "branches",
+  ADMIN_COLLECTION: "admin"
 };
-// ================================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc,
-  query, where, serverTimestamp, arrayUnion, arrayRemove
+  getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseApp = initializeApp(CONFIG.FIREBASE_CONFIG);
 const db = getFirestore(firebaseApp);
 
-function todayStr(){
-  const d = new Date();
-  const localMidnightAdjusted = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-  return localMidnightAdjusted.toISOString().slice(0,10);
+async function loadBranchDropdown(){
+  const branchSelect = document.getElementById('branch');
+  branchSelect.innerHTML = '<option value="">Select branch</option>';
+  try {
+    const snap = await getDocs(collection(db, CONFIG.BRANCHES_COLLECTION));
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      if(data.branch){
+        const opt = document.createElement('option');
+        opt.value = data.branch; opt.textContent = data.branch;
+        branchSelect.appendChild(opt);
+      }
+    });
+  } catch(err) {
+    console.error(err);
+  }
 }
-function showToast(msg, isErr){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (isErr?' err':'');
-  setTimeout(()=>{ t.className='toast'; }, 3200);
-}
+loadBranchDropdown();
 
-// ===== LOGIN PANEL TOGGLE =====
+// ===== LOGIN TOGGLE =====
 document.getElementById('showAdminPanel').addEventListener('click', ()=>{
   document.getElementById('staffPanel').classList.remove('show');
   document.getElementById('adminPanel').classList.add('show');
@@ -357,56 +404,77 @@ document.getElementById('showStaffPanel').addEventListener('click', ()=>{
   document.getElementById('staffPanel').classList.add('show');
 });
 
-// ===== STAFF LOGIN =====
-let currentBranch = null;
-let currentBranchSlug = null;
-
+// ===== STAFF LOGIN (From Firebase DB) =====
+let currentBranchName = "";
 document.getElementById('staffLoginForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const u = document.getElementById('staffUser').value.trim().toLowerCase();
   const p = document.getElementById('staffPass').value.trim();
-  const match = CONFIG.BRANCH_LOGINS.find(b => b.username.toLowerCase() === u && b.password === p);
   const errBox = document.getElementById('staffLoginError');
-  if(match){
-    errBox.classList.remove('show');
-    currentBranch = match.branch;
-    currentBranchSlug = match.username;
-    document.getElementById('loginOverlay').style.display = 'none';
-    document.getElementById('staffApp').style.display = 'block';
-    document.getElementById('sessionBranchName').textContent = match.branch;
-    document.getElementById('entriesBranchLabel').textContent = match.branch;
-    await loadCoffeeNames();
-    await checkTodayWaterQuality();
-    await loadTodayEntries();
-  } else {
+
+  try {
+    const snap = await getDocs(collection(db, CONFIG.BRANCHES_COLLECTION));
+    let matchedBranch = null;
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      if(data.username && data.username.toLowerCase() === u && data.password === p){
+        matchedBranch = data;
+      }
+    });
+
+    if(matchedBranch){
+      errBox.classList.remove('show');
+      currentBranchName = matchedBranch.branch;
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('staffApp').style.display = 'block';
+      document.getElementById('sessionBranchName').textContent = currentBranchName;
+      const branchSelect = document.getElementById('branch');
+      branchSelect.value = currentBranchName;
+      branchSelect.setAttribute('disabled', 'disabled');
+    } else {
+      errBox.classList.add('show');
+    }
+  } catch(err) {
+    errBox.textContent = "Login error. Check internet/database.";
     errBox.classList.add('show');
+    console.error(err);
   }
 });
 
 document.getElementById('staffLogoutBtn').addEventListener('click', ()=>{
-  document.getElementById('staffApp').style.display = 'none';
-  document.getElementById('loginOverlay').style.display = 'flex';
-  document.getElementById('staffLoginForm').reset();
   location.reload();
 });
 
-// ===== ADMIN LOGIN =====
+// ===== ADMIN LOGIN (From Firebase DB - Secure) =====
 document.getElementById('adminLoginForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const u = document.getElementById('adminUser').value.trim().toLowerCase();
   const p = document.getElementById('adminPass').value.trim();
   const errBox = document.getElementById('adminLoginError');
-  if(u === CONFIG.ADMIN_LOGIN.username.toLowerCase() && p === CONFIG.ADMIN_LOGIN.password){
-    errBox.classList.remove('show');
-    document.getElementById('loginOverlay').style.display = 'none';
-    document.getElementById('adminApp').style.display = 'block';
-    document.getElementById('sessionAdminName').textContent = 'Owner / Admin — All Branches';
-    populateBranchFilter();
-    await populateCoffeeFilter();
-    await loadCoffeeNamesAdmin();
-    await loadAllEntries();
-  } else {
+
+  try {
+    const snap = await getDocs(collection(db, CONFIG.ADMIN_COLLECTION));
+    let matchedAdmin = null;
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      if(data.username && data.username.toLowerCase() === u && data.password === p){
+        matchedAdmin = data;
+      }
+    });
+
+    if(matchedAdmin){
+      errBox.classList.remove('show');
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('adminApp').style.display = 'block';
+      document.getElementById('sessionAdminName').textContent = 'Owner / Admin — All Branches';
+      loadReports();
+    } else {
+      errBox.classList.add('show');
+    }
+  } catch(err) {
+    errBox.textContent = "Login error. Check database.";
     errBox.classList.add('show');
+    console.error(err);
   }
 });
 
@@ -414,309 +482,247 @@ document.getElementById('adminLogoutBtn').addEventListener('click', ()=>{
   location.reload();
 });
 
-function populateBranchFilter(){
-  const sel = document.getElementById('branchFilter');
-  sel.innerHTML = '<option value="">All branches</option>';
-  CONFIG.BRANCH_LOGINS.forEach(b=>{
-    const opt = document.createElement('option');
-    opt.value = b.branch; opt.textContent = b.branch;
-    sel.appendChild(opt);
+document.getElementById('refreshBtn').addEventListener('click', loadReports);
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    activeFilter = tab.dataset.filter;
+    renderCards();
   });
-}
-
-async function populateCoffeeFilter(){
-  const names = await getCoffeeNamesDoc();
-  const sel = document.getElementById('coffeeFilter');
-  sel.innerHTML = '<option value="">All coffees</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
-}
-
-// ===== COFFEE NAMES =====
-async function getCoffeeNamesDoc(){
-  const ref = doc(db, "settings", CONFIG.SETTINGS_DOC);
-  const snap = await getDoc(ref);
-  if(!snap.exists()){
-    await setDoc(ref, { names: CONFIG.DEFAULT_COFFEE_NAMES });
-    return CONFIG.DEFAULT_COFFEE_NAMES;
-  }
-  return snap.data().names || CONFIG.DEFAULT_COFFEE_NAMES;
-}
-
-async function loadCoffeeNames(){
-  const names = await getCoffeeNamesDoc();
-  const sel = document.getElementById('coffeeNameSelect');
-  sel.innerHTML = '<option value="">Select coffee</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
-}
-document.getElementById('refreshNamesBtn').addEventListener('click', loadCoffeeNames);
-
-async function loadCoffeeNamesAdmin(){
-  const names = await getCoffeeNamesDoc();
-  const manager = document.getElementById('namesManager');
-  manager.innerHTML = names.map(n => `
-    <div class="name-tag">${n}<button type="button" data-name="${n}" class="removeNameBtn">×</button></div>
-  `).join('');
-  document.querySelectorAll('.removeNameBtn').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const ref = doc(db, "settings", CONFIG.SETTINGS_DOC);
-      await setDoc(ref, { names: arrayRemove(btn.dataset.name) }, { merge: true });
-      await loadCoffeeNamesAdmin();
-      await populateCoffeeFilter();
-      showToast('Coffee name removed');
-    });
-  });
-}
-
-document.getElementById('addCoffeeNameBtn').addEventListener('click', async ()=>{
-  const input = document.getElementById('newCoffeeName');
-  const name = input.value.trim().toUpperCase();
-  if(!name) return;
-  const ref = doc(db, "settings", CONFIG.SETTINGS_DOC);
-  await setDoc(ref, { names: arrayUnion(name) }, { merge: true });
-  input.value = '';
-  await loadCoffeeNamesAdmin();
-  await populateCoffeeFilter();
-  showToast('Coffee name added!');
 });
 
-// ===== WATER QUALITY =====
-let todayWQ = null;
+document.getElementById('date').value = new Date().toISOString().slice(0,10);
+document.getElementById('time').value = new Date().toTimeString().slice(0,5);
 
-async function checkTodayWaterQuality(){
-  const id = `${currentBranchSlug}_${todayStr()}`;
-  const snap = await getDoc(doc(db, CONFIG.WATER_QUALITY_COLLECTION, id));
-  if(snap.exists()){
-    todayWQ = snap.data();
-    showWQDisplay();
+let selectedCategory = "";
+window.selectCategory = function(cat){
+  selectedCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active-exp','active-ok'));
+  document.getElementById('noteExp').classList.remove('show');
+  document.getElementById('noteOk').classList.remove('show');
+  const btn = document.querySelector(`.cat-btn[data-cat="${cat}"]`);
+  if(cat==='expensive'){
+    btn.classList.add('active-exp');
+    document.getElementById('noteExp').classList.add('show');
   } else {
-    showWQForm();
+    btn.classList.add('active-ok');
+    document.getElementById('noteOk').classList.add('show');
   }
 }
 
-function showWQForm(){
-  document.getElementById('wqForm').style.display = 'block';
-  document.getElementById('wqDisplay').style.display = 'none';
-  document.getElementById('recipeCard').style.display = 'none';
-  document.getElementById('entriesCard').style.display = 'none';
+function setupPhotoBox(inputId, boxId){
+  const input = document.getElementById(inputId);
+  const box = document.getElementById(boxId);
+  input.addEventListener('change', ()=>{
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      let img = box.querySelector('img');
+      if(!img){
+        img = document.createElement('img');
+        box.appendChild(img);
+        const badge = document.createElement('div');
+        badge.className='badge'; badge.textContent='Attached';
+        box.appendChild(badge);
+      }
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
-function showWQDisplay(){
-  document.getElementById('wqForm').style.display = 'none';
-  document.getElementById('wqDisplay').style.display = 'block';
-  document.getElementById('wqTdsShow').textContent = todayWQ.tds;
-  document.getElementById('wqPhShow').textContent = todayWQ.ph;
-  document.getElementById('wqTempShow').textContent = todayWQ.temp;
-  document.getElementById('recipeCard').style.display = 'block';
-  document.getElementById('entriesCard').style.display = 'block';
-}
+setupPhotoBox('itemPhoto','boxItem');
+setupPhotoBox('placePhoto','boxPlace');
 
-document.getElementById('saveWQBtn').addEventListener('click', async ()=>{
-  const tds = document.getElementById('tds').value;
-  const ph = document.getElementById('ph').value;
-  const temp = document.getElementById('temp').value;
-  if(!tds || !ph || !temp){ showToast('Please fill TDS, pH and Temp', true); return; }
-
-  const id = `${currentBranchSlug}_${todayStr()}`;
-  todayWQ = { branch: currentBranch, date: todayStr(), tds, ph, temp, updatedAt: serverTimestamp() };
-  try{
-    await setDoc(doc(db, CONFIG.WATER_QUALITY_COLLECTION, id), todayWQ);
-    showWQDisplay();
-    showToast('Water quality saved!');
-  } catch(err){
-    showToast('Could not save — check connection/setup', true);
-    console.error(err);
-  }
-});
-
-document.getElementById('editWQBtn').addEventListener('click', ()=>{
-  document.getElementById('tds').value = todayWQ.tds;
-  document.getElementById('ph').value = todayWQ.ph;
-  document.getElementById('temp').value = todayWQ.temp;
-  showWQForm();
-});
-
-// ===== RECIPE ENTRY =====
-let selectedMethod = "";
-document.getElementById('drinkTypeSelect').addEventListener('change', (e)=>{
-  selectedMethod = e.target.value;
-});
-
-function recalcRatio(){
-  const wv = parseFloat(document.getElementById('waterVolume').value);
-  const cg = parseFloat(document.getElementById('coffeeGrams').value);
-  const out = document.getElementById('coffeeRatio');
-  if(wv && cg){ out.value = (wv/cg).toFixed(2); } else { out.value = ''; }
-}
-document.getElementById('waterVolume').addEventListener('input', recalcRatio);
-document.getElementById('coffeeGrams').addEventListener('input', recalcRatio);
-
-document.getElementById('addEntryBtn').addEventListener('click', async ()=>{
-  const coffeeName = document.getElementById('coffeeNameSelect').value;
-  const waterVolume = document.getElementById('waterVolume').value;
-  const coffeeGrams = document.getElementById('coffeeGrams').value;
-  const puls = document.getElementById('puls').value;
-  const extractionTime = document.getElementById('extractionTime').value;
-  const extractionMl = document.getElementById('extractionMl').value;
-  const coffeeRatio = document.getElementById('coffeeRatio').value;
-
-  if(!selectedMethod){ showToast('Please select a method', true); return; }
-  if(!coffeeName){ showToast('Please select a coffee name', true); return; }
-  if(!waterVolume || !coffeeGrams){ showToast('Please fill water volume and coffee grams', true); return; }
-
-  const btn = document.getElementById('addEntryBtn');
-  btn.disabled = true; btn.textContent = 'Saving...';
-
-  try{
-    await addDoc(collection(db, CONFIG.ENTRIES_COLLECTION), {
-      branch: currentBranch,
-      branchSlug: currentBranchSlug,
-      date: todayStr(),
-      tds: todayWQ.tds, ph: todayWQ.ph, temp: todayWQ.temp,
-      method: selectedMethod,
-      coffeeName, waterVolume, coffeeGrams, puls,
-      extractionTime, extractionMl, coffeeRatio,
-      createdAt: serverTimestamp()
-    });
-    showToast('Entry added!');
-    document.getElementById('drinkTypeSelect').value = '';
-    selectedMethod = "";
-    ['coffeeNameSelect','waterVolume','coffeeGrams','puls','extractionTime','extractionMl','coffeeRatio'].forEach(id=>{
-      document.getElementById(id).value = '';
-    });
-    await loadTodayEntries();
-  } catch(err){
-    showToast('Could not save entry', true);
-    console.error(err);
-  } finally{
-    btn.disabled = false; btn.textContent = 'Add Entry →';
-  }
-});
-
-function pillClass(method){ return 'method-' + method.replace(/\s+/g,'-'); }
-
-const WQ_RANGES = { tds: { min: 100, max: 120 }, ph: { min: 6.5, max: 8 }, temp: { min: 20, max: 28 } };
-function outOfRangeStyle(value, key){
-  const range = WQ_RANGES[key];
-  const num = parseFloat(value);
-  if(!range || isNaN(num)) return '';
-  if(num < range.min || num > range.max){
-    return ' style="color:var(--alert);font-weight:700;background:var(--alert-bg);"';
-  }
-  return '';
+function compressImage(file, maxDim = 1280, quality = 0.7){
+  return new Promise((resolve, reject)=>{
+    if(!file){ resolve(""); return; }
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      img.onload = ()=>{
+        let { width, height } = img;
+        if(width > height && width > maxDim){
+          height = Math.round(height * (maxDim / width));
+          width = maxDim;
+        } else if(height >= width && height > maxDim){
+          width = Math.round(width * (maxDim / height));
+          height = maxDim;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
-async function loadTodayEntries(){
-  const q = query(
-    collection(db, CONFIG.ENTRIES_COLLECTION),
-    where('branchSlug', '==', currentBranchSlug),
-    where('date', '==', todayStr())
-  );
-  const snap = await getDocs(q);
-  const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  const tbody = document.getElementById('entriesTbody');
-  if(rows.length === 0){
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--ink-soft);">No entries yet today.</td></tr>';
+function showToast(msg, isErr){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr?' err':'');
+  setTimeout(()=>{ t.className='toast'; }, 3200);
+}
+
+document.getElementById('lfForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(!selectedCategory){
+    showToast("Please select an Item Category", true);
     return;
   }
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td><span class="pill ${pillClass(r.method)}">${r.method}</span></td>
-      <td><span class="pill coffee-name">${r.coffeeName}</span></td>
-      <td>${r.waterVolume}</td>
-      <td>${r.coffeeGrams}</td>
-      <td>${r.puls || ''}</td>
-      <td>${r.extractionTime || ''}</td>
-      <td>${r.extractionMl || ''}</td>
-      <td>${r.coffeeRatio || ''}</td>
-    </tr>
-  `).join('');
-}
 
-// ===== ADMIN: ALL ENTRIES TABLE (Client-side filtering) =====
-async function loadAllEntries(){
-  const tbody = document.getElementById('adminTbody');
-  tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;">Loading…</td></tr>';
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = "Compressing photos...";
+
   try{
-    const snap = await getDocs(collection(db, CONFIG.ENTRIES_COLLECTION));
-    let rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const itemPhotoFile = document.getElementById('itemPhoto').files[0];
+    const placePhotoFile = document.getElementById('placePhoto').files[0];
+    const [itemPhotoB64, placePhotoB64] = await Promise.all([
+      compressImage(itemPhotoFile),
+      compressImage(placePhotoFile)
+    ]);
 
-    const branchVal = document.getElementById('branchFilter').value;
-    const coffeeVal = document.getElementById('coffeeFilter').value;
-    const drinkTypeVal = document.getElementById('drinkTypeFilter').value;
-    const dateVal = document.getElementById('dateFilter').value;
+    const payload = {
+      branch: currentBranchName,
+      filedBy: document.getElementById('filedBy').value,
+      date: document.getElementById('date').value,
+      time: document.getElementById('time').value,
+      place: document.getElementById('place').value,
+      employeeName: document.getElementById('empName').value,
+      employeeId: document.getElementById('empId').value,
+      itemDescription: document.getElementById('itemDesc').value,
+      category: selectedCategory === 'expensive' ? 'Expensive' : 'Not Expensive',
+      returnPolicy: selectedCategory === 'expensive' ? 'Hold 48 hrs' : 'Hold 14 days',
+      customerContact: document.getElementById('custPhone').value,
+      status: document.getElementById('status').value,
+      notes: document.getElementById('notes').value,
+      itemPhoto: itemPhotoB64,
+      placePhoto: placePhotoB64,
+      createdAt: serverTimestamp()
+    };
 
-    // Apply Branch Filter
-    if(branchVal){
-      rows = rows.filter(r => (r.branch || '').trim().toLowerCase() === branchVal.trim().toLowerCase());
-    }
-    // Apply Coffee Filter
-    if(coffeeVal){
-      rows = rows.filter(r => (r.coffeeName || '').trim().toLowerCase() === coffeeVal.trim().toLowerCase());
-    }
-    // Apply Drink Type Filter
-    if(drinkTypeVal){
-      rows = rows.filter(r => (r.method || '').trim().toLowerCase() === drinkTypeVal.trim().toLowerCase());
-    }
-    // Apply Date Filter
-    if(dateVal){
-      rows = rows.filter(r => (r.date || '') === dateVal);
-    }
+    btn.textContent = "Uploading...";
+    await addDoc(collection(db, CONFIG.COLLECTION), payload);
 
-    // Sort by newest first
-    rows.sort((a, b) => {
-      const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-      const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-      if (timeA !== timeB) return timeB - timeA;
-      return (b.date || '').localeCompare(a.date || '');
-    });
-
-    if(rows.length === 0){
-      tbody.innerHTML = '<tr><td colspan="14" class="empty">No entries found for the selected filter.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td>${r.date || ''}</td>
-        <td>${r.branch || ''}</td>
-        <td${outOfRangeStyle(r.tds,'tds')}>${r.tds || ''}</td>
-        <td${outOfRangeStyle(r.ph,'ph')}>${r.ph || ''}</td>
-        <td${outOfRangeStyle(r.temp,'temp')}>${r.temp || ''}</td>
-        <td><span class="pill ${pillClass(r.method || '')}">${r.method || ''}</span></td>
-        <td><span class="pill coffee-name">${r.coffeeName || ''}</span></td>
-        <td>${r.waterVolume || ''}</td>
-        <td>${r.coffeeGrams || ''}</td>
-        <td>${r.puls || ''}</td>
-        <td>${r.extractionTime || ''}</td>
-        <td>${r.extractionMl || ''}</td>
-        <td>${r.coffeeRatio || ''}</td>
-        <td><button type="button" class="del-btn admin-del-btn" data-id="${r.id}">Delete</button></td>
-      </tr>
-    `).join('');
-
-    document.querySelectorAll('.admin-del-btn').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{
-        if(!confirm('Delete this entry? This cannot be undone.')) return;
-        await deleteDoc(doc(db, CONFIG.ENTRIES_COLLECTION, btn.dataset.id));
-        showToast('Entry deleted');
-        loadAllEntries();
-      });
+    showToast("Report saved to Firebase!");
+    document.getElementById('lfForm').reset();
+    document.getElementById('date').value = new Date().toISOString().slice(0,10);
+    document.getElementById('time').value = new Date().toTimeString().slice(0,5);
+    const branchSelect = document.getElementById('branch');
+    branchSelect.value = currentBranchName;
+    selectedCategory="";
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active-exp','active-ok'));
+    document.getElementById('noteExp').classList.remove('show');
+    document.getElementById('noteOk').classList.remove('show');
+    ['boxItem','boxPlace'].forEach(id=>{
+      const box=document.getElementById(id);
+      const img=box.querySelector('img'); if(img) img.remove();
+      const badge=box.querySelector('.badge'); if(badge) badge.remove();
     });
   } catch(err){
-    tbody.innerHTML = '<tr><td colspan="14" class="empty">Could not load data — check connection/setup.</td></tr>';
+    showToast("Submit failed — check connection", true);
+    console.error(err);
+  } finally{
+    btn.disabled = false; btn.textContent = "Submit Report →";
+  }
+});
+
+let allRows = [];
+let activeFilter = "all";
+
+async function loadReports(){
+  document.getElementById('cardsContainer').innerHTML = '<div class="loading">Loading reports…</div>';
+  try{
+    const q = query(collection(db, CONFIG.COLLECTION), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    allRows = snap.docs.map(d => d.data());
+    document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+    renderCards();
+  } catch(err){
+    document.getElementById('cardsContainer').innerHTML = '<div class="empty">Could not load reports.</div>';
     console.error(err);
   }
 }
 
-document.getElementById('refreshEntriesBtn').addEventListener('click', loadAllEntries);
-document.getElementById('branchFilter').addEventListener('change', loadAllEntries);
-document.getElementById('coffeeFilter').addEventListener('change', loadAllEntries);
-document.getElementById('drinkTypeFilter').addEventListener('change', loadAllEntries);
-document.getElementById('dateFilter').addEventListener('change', loadAllEntries);
-document.getElementById('clearFilterBtn').addEventListener('click', ()=>{
-  document.getElementById('branchFilter').value = '';
-  document.getElementById('coffeeFilter').value = '';
-  document.getElementById('drinkTypeFilter').value = '';
-  document.getElementById('dateFilter').value = '';
-  loadAllEntries();
-});
+function computeState(row){
+  const doneStatuses = ['Returned to Customer', 'Handed to Management', 'Disposed'];
+  if(doneStatuses.includes(row.status)){
+    return { state: 'done', label: row.status, note: 'Closed — ' + row.status + '.' };
+  }
+
+  const holdHours = row.category === 'Expensive' ? 48 : (14 * 24);
+  const foundDateTime = new Date((row.date || '') + 'T' + (row.time || '00:00'));
+  const deadline = new Date(foundDateTime.getTime() + holdHours * 60 * 60 * 1000);
+  const now = new Date();
+
+  if(isNaN(foundDateTime.getTime())){
+    return { state: 'pending', label: 'Pending', note: 'Hold window active.' };
+  }
+
+  if(now > deadline){
+    const overdueBy = Math.floor((now - deadline) / (1000*60*60));
+    const overdueText = overdueBy >= 24 ? Math.floor(overdueBy/24) + ' day(s)' : overdueBy + ' hour(s)';
+    return { state: 'overdue', label: 'Overdue', note: 'Hold window passed ' + overdueText + ' ago — needs action.' };
+  } else {
+    const remainingHrs = Math.ceil((deadline - now) / (1000*60*60));
+    const remainingText = remainingHrs >= 24 ? Math.ceil(remainingHrs/24) + ' day(s)' : remainingHrs + ' hour(s)';
+    return { state: 'pending', label: 'Pending', note: remainingText + ' left in hold window.' };
+  }
+}
+
+function renderCards(){
+  const container = document.getElementById('cardsContainer');
+  const withState = allRows.map(r => ({ row: r, state: computeState(r) }));
+
+  document.getElementById('countAll').textContent = withState.length;
+  document.getElementById('countPending').textContent = withState.filter(x=>x.state.state==='pending').length;
+  document.getElementById('countOverdue').textContent = withState.filter(x=>x.state.state==='overdue').length;
+  document.getElementById('countDone').textContent = withState.filter(x=>x.state.state==='done').length;
+
+  const filtered = activeFilter === 'all' ? withState : withState.filter(x => x.state.state === activeFilter);
+
+  if(filtered.length === 0){
+    container.innerHTML = '<div class="empty">No reports in this category yet.</div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(({row, state})=>{
+    const photos = [];
+    if(row.itemPhoto) photos.push('<a href="'+row.itemPhoto+'" target="_blank">Item Photo</a>');
+    if(row.placePhoto) photos.push('<a href="'+row.placePhoto+'" target="_blank">Location Photo</a>');
+
+    return `
+    <div class="report-card">
+      <div class="card-top">
+        <p class="card-title">${escapeHtml(row.itemDescription || 'Item')}</p>
+        <span class="status-pill ${state.state}">${escapeHtml(state.label)}</span>
+      </div>
+      <div class="meta-grid">
+        <div><strong>Branch:</strong> ${escapeHtml(row.branch || '')}</div>
+        <div><strong>Found:</strong> ${escapeHtml(row.date || '')} ${escapeHtml(row.time || '')}</div>
+        <div><strong>Place:</strong> ${escapeHtml(row.place || '')}</div>
+        <div><strong>Category:</strong> ${escapeHtml(row.category || '')}</div>
+        <div><strong>Customer:</strong> ${escapeHtml(row.customerContact || '')}</div>
+        <div><strong>Employee:</strong> ${escapeHtml(row.employeeName || '')} (${escapeHtml(row.employeeId || '')})</div>
+        <div><strong>Filed by:</strong> ${escapeHtml(row.filedBy || '')}</div>
+      </div>
+      <div class="time-note ${state.state}">${escapeHtml(state.note)}</div>
+      ${photos.length ? '<div class="photo-links">'+photos.join('')+'</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 </script>
 </body>
 </html>
