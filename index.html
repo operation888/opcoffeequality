@@ -399,7 +399,7 @@ document.getElementById('staffLoginForm').addEventListener('submit', async (e)=>
     return;
   }
 
-  const match = users.find(b => b.role === 'branch' && b.username.toLowerCase() === u && b.password === p);
+  const match = users.find(b => b.role === 'branch' && (b.username||'').toLowerCase() === u && b.password === p);
   if(match){
     errBox.classList.remove('show');
     currentBranch = match.branch;
@@ -442,7 +442,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', async (e)=>
     return;
   }
 
-  const match = users.find(b => b.role === 'admin' && b.username.toLowerCase() === u && b.password === p);
+  const match = users.find(b => b.role === 'admin' && (b.username||'').toLowerCase() === u && b.password === p);
   if(match){
     errBox.classList.remove('show');
     document.getElementById('loginOverlay').style.display = 'none';
