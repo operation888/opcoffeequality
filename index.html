@@ -1036,7 +1036,7 @@ tr:hover td{background:rgba(61,112,72,.08)}
             </div>
             <div>
                 <label>Future Days Coverage</label>
-                <input type="number" id="p_futureDays" value="15" min="1" max="30">
+                <input type="number" id="p_futureDays" value="10" min="1" max="30">
             </div>
             <div>
                 <label>Safety Stock %</label>
@@ -1054,7 +1054,6 @@ tr:hover td{background:rgba(61,112,72,.08)}
             <button class="btn btn-success" onclick="p_handleExportTO()">📤 Export TO</button>
             <button class="btn btn-info" onclick="p_handleTestSample()">🧪 Test Sample</button>
         </div>
-        <p class="note" style="margin-top:8px;">📦 Boxes Needed column Forecast dashboard ke "Storage Box (pcs/box)" data se calculate hota hai — jis SKU ka box size set nahi hai wahan N/A dikhega.</p>
     </div>
 
     <div id="p_results" class="results" style="display:none;"></div>
@@ -1429,10 +1428,7 @@ function p_handleCalculateTO(){
                 else if(days<3) pri='High';
                 else if(days<7) pri='Medium';
                 else pri='Low';
-                var neededPcs=Math.ceil(needed);
-                var boxSize=(typeof fcGetBoxSize==='function')?fcGetBoxSize(r.sku):null;
-                var boxesNeeded=boxSize?(neededPcs/boxSize):null;
-                p_calculatedTO.push({item:name,sku:r.sku,currentStock:parseFloat(curQty.toFixed(2)),dailyRate:parseFloat(r.dailyRate.toFixed(4)),needed:neededPcs,boxSize:boxSize,boxesNeeded:boxesNeeded,days:parseFloat(days.toFixed(1)),priority:pri});
+                p_calculatedTO.push({item:name,sku:r.sku,currentStock:parseFloat(curQty.toFixed(2)),dailyRate:parseFloat(r.dailyRate.toFixed(4)),needed:Math.ceil(needed),days:parseFloat(days.toFixed(1)),priority:pri});
             }
         }
     });
@@ -1453,15 +1449,9 @@ function p_displayTOResults(cDays,fDays,sPct,branch){
     html+='<div><button class="btn" style="padding:10px 16px;" onclick="p_toggleSelectAll()">☑️ Select/Unselect All</button></div>';
     html+='</div>';
     html+='<div id="p_selCount" class="note" style="margin-bottom:8px;">0 items selected</div>';
-    html+='<div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="p_selectAllBox" onclick="p_toggleSelectAll(this.checked)"></th><th>#</th><th>Item Name</th><th>SKU</th><th>Current Stock</th><th>Daily Usage</th><th>Days Left</th><th>TO Qty (pcs)</th><th>Boxes Needed</th><th>Priority</th></tr></thead><tbody id="p_toTbody">';
+    html+='<div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="p_selectAllBox" onclick="p_toggleSelectAll(this.checked)"></th><th>#</th><th>Item Name</th><th>SKU</th><th>Current Stock</th><th>Daily Usage</th><th>Days Left</th><th>TO Qty</th><th>Priority</th></tr></thead><tbody id="p_toTbody">';
     p_calculatedTO.forEach(function(item,i){
-        var boxesHtml;
-        if(item.boxSize){
-            boxesHtml='<strong>'+Math.ceil(item.boxesNeeded)+'</strong> box'+(Math.ceil(item.boxesNeeded)===1?'':'es')+'<div style="font-size:0.8em;opacity:0.7;">('+item.boxesNeeded.toFixed(1)+' exact, '+item.boxSize+' pcs/box)</div>';
-        } else {
-            boxesHtml='<span style="opacity:0.6;" title="Forecast dashboard me Admin Login karke is SKU ka Storage Box (pcs/box) set karein">N/A</span>';
-        }
-        html+='<tr data-search="'+((item.item||'')+' '+(item.sku||'')).toLowerCase().replace(/"/g,'')+'"><td><input type="checkbox" class="p_rowChk" data-idx="'+i+'" onclick="p_updateSelCount()"></td><td>'+(i+1)+'</td><td><strong>'+item.item+'</strong></td><td>'+(item.sku||'N/A')+'</td><td>'+item.currentStock.toFixed(2)+'</td><td>'+item.dailyRate.toFixed(2)+'</td><td>'+item.days.toFixed(1)+'</td><td><span class="to-quantity">'+item.needed+'</span></td><td>'+boxesHtml+'</td><td class="priority-'+item.priority+'">'+item.priority+'</td></tr>';
+        html+='<tr data-search="'+((item.item||'')+' '+(item.sku||'')).toLowerCase().replace(/"/g,'')+'"><td><input type="checkbox" class="p_rowChk" data-idx="'+i+'" onclick="p_updateSelCount()"></td><td>'+(i+1)+'</td><td><strong>'+item.item+'</strong></td><td>'+(item.sku||'N/A')+'</td><td>'+item.currentStock.toFixed(2)+'</td><td>'+item.dailyRate.toFixed(2)+'</td><td>'+item.days.toFixed(1)+'</td><td><span class="to-quantity">'+item.needed+'</span></td><td class="priority-'+item.priority+'">'+item.priority+'</td></tr>';
     });
     html+='</tbody></table></div>';
     div.innerHTML=html; div.style.display='block';
@@ -1506,12 +1496,8 @@ function p_handleExportTO(){
     if(p_calculatedTO.length===0){ p_showStatus('⚠️ Calculate TO first!','warning'); return; }
     var items=p_getSelectedTOItems();
     if(items.length===0){ p_showStatus('⚠️ No items selected!','warning'); return; }
-    var rows=['name,sku,storage_quantity,boxes_needed,pcs_per_box,ingredients_quantity'];
-    items.forEach(function(item){
-        var boxesStr=item.boxSize?Math.ceil(item.boxesNeeded):'';
-        var pcsPerBoxStr=item.boxSize?item.boxSize:'';
-        rows.push(['"'+(item.item||'').replace(/"/g,'""')+'"','"'+(item.sku||'').replace(/"/g,'""')+'"',item.needed,boxesStr,pcsPerBoxStr,''].join(','));
-    });
+    var rows=['name,sku,storage_quantity,ingredients_quantity'];
+    items.forEach(function(item){ rows.push(['"'+(item.item||'').replace(/"/g,'""')+'"','"'+(item.sku||'').replace(/"/g,'""')+'"',item.needed,''].join(',')); });
     downloadCSV(rows.join('\n'),'Production_TO_'+new Date().toISOString().split('T')[0]+'.csv');
     p_showStatus('📤 Exported! ('+items.length+' items)','success');
 }
