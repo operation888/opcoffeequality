@@ -97,6 +97,12 @@
   .pill.coffee-name{background:var(--ok-bg);color:var(--ok);}
   .del-btn{background:none;border:none;color:var(--alert);cursor:pointer;font-size:12px;font-weight:700;text-decoration:underline;font-family:Georgia,serif;}
   .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;}
+  .photo-thumb{width:34px;height:34px;object-fit:cover;border-radius:6px;border:1.5px solid var(--line);cursor:pointer;display:block;}
+  .photo-thumb:hover{border-color:var(--accent);}
+  .no-photo{color:var(--ink-soft);font-size:11px;font-style:italic;}
+  .lightbox{position:fixed;inset:0;background:rgba(18,36,25,.88);display:none;align-items:center;justify-content:center;z-index:200;padding:30px;cursor:zoom-out;}
+  .lightbox.show{display:flex;}
+  .lightbox img{max-width:90vw;max-height:88vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
 
   .admin-filters{display:flex;gap:10px;margin:0 16px 14px;flex-wrap:wrap;}
   .admin-filters select,.admin-filters input{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 12px;font-size:13px;font-family:Georgia,serif;color:var(--green);}
@@ -214,7 +220,19 @@
       </div>
 
       <div class="row">
-        <div><label>Water Volume (ml)</label><input type="number" step="any" id="waterVolume" placeholder="e.g. 300"></div>
+        <div>
+          <label>Water Volume (ml)</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="number" step="any" id="waterVolume" placeholder="e.g. 300" style="flex:1;">
+            <button type="button" class="secondary" id="waterPhotoBtn" title="Capture live water photo proof" style="padding:10px 12px;flex-shrink:0;">📷</button>
+          </div>
+          <input type="file" accept="image/*" capture="environment" id="waterPhotoInput" style="display:none;">
+          <div id="waterPhotoPreviewWrap" style="display:none;align-items:center;gap:8px;margin-top:8px;">
+            <img id="waterPhotoPreview" style="width:46px;height:46px;object-fit:cover;border-radius:8px;border:1.5px solid var(--line);">
+            <span style="font-size:11px;color:var(--ok);font-weight:700;">Photo captured ✓</span>
+            <button type="button" id="removeWaterPhotoBtn" style="background:var(--alert);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:1;">×</button>
+          </div>
+        </div>
         <div><label>Coffee (g)</label><input type="number" step="any" id="coffeeGrams" placeholder="e.g. 18"></div>
         <div><label>Puls</label><input type="number" step="any" id="puls" placeholder="e.g. 6"></div>
       </div>
@@ -251,7 +269,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Date</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th></tr>
+            <tr><th>Date</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Photo</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th></tr>
           </thead>
           <tbody id="staffEntriesTbody"></tbody>
         </table>
@@ -302,12 +320,13 @@
       <input type="date" id="dateFilter">
       <button type="button" class="secondary" id="clearFilterBtn">Clear filters</button>
       <button type="button" class="secondary" id="refreshEntriesBtn">Refresh</button>
+      <button type="button" class="secondary" id="cleanupPhotosBtn" title="Clears photos on entries older than 90 days to save storage. Entry data/numbers are kept.">🧹 Cleanup old photos</button>
     </div>
 
     <div class="table-wrap" style="margin:0 16px;">
       <table>
         <thead>
-          <tr><th>Date</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th><th></th></tr>
+          <tr><th>Date</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Photo</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th><th></th></tr>
         </thead>
         <tbody id="adminTbody"></tbody>
       </table>
@@ -316,6 +335,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="lightbox" id="photoLightbox"><img id="photoLightboxImg" src=""></div>
 
 <script type="module">
 // ============= CONFIG — ENTER YOUR DETAILS HERE =============
@@ -346,16 +366,18 @@ const CONFIG = {
 
   ADMIN_LOGIN: { username: "admin", password: "op998800" },
 
-  DEFAULT_COFFEE_NAMES: ["ETHIOPIA GUJI", "ETHIOPIA GELCA", "ZURI UGANDA", "GUJI,YEMEN,ERUFIGIO"]
+  DEFAULT_COFFEE_NAMES: ["ETHIOPIA GUJI", "ETHIOPIA GELCA", "ZURI UGANDA", "GUJI,YEMEN,ERUFIGIO"],
+
+  // Photos older than this many days get auto-cleared to save Firestore storage (data/numbers stay, only the photo is removed)
+  PHOTO_RETENTION_DAYS: 90
 };
 // ================================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc,
-  query, where, orderBy, serverTimestamp, arrayUnion, arrayRemove
+  getFirestore, collection, addDoc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, doc,
+  query, where, orderBy, serverTimestamp, arrayUnion, arrayRemove, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const firebaseApp = initializeApp(CONFIG.FIREBASE_CONFIG);
 const db = getFirestore(firebaseApp);
 
@@ -364,11 +386,46 @@ function todayStr(){
   const localMidnightAdjusted = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
   return localMidnightAdjusted.toISOString().slice(0,10);
 }
+function daysAgoStr(days){
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  const localMidnightAdjusted = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return localMidnightAdjusted.toISOString().slice(0,10);
+}
 function showToast(msg, isErr){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show' + (isErr?' err':'');
   setTimeout(()=>{ t.className='toast'; }, 3200);
+}
+
+// ===== AUTO CLEANUP: clear photos on entries older than PHOTO_RETENTION_DAYS =====
+// Only removes the photo (waterPhotoUrl) to free up storage — the entry's numbers/data stay forever.
+async function cleanupOldPhotos(silent){
+  try{
+    const cutoff = daysAgoStr(CONFIG.PHOTO_RETENTION_DAYS);
+    const q = query(collection(db, CONFIG.ENTRIES_COLLECTION), where('date', '<', cutoff));
+    const snap = await getDocs(q);
+    const toClean = snap.docs.filter(d => d.data().waterPhotoUrl);
+    if(toClean.length === 0){
+      if(!silent) showToast('No old photos to clean up');
+      return 0;
+    }
+    // Firestore batches are capped at 500 writes — chunk just in case.
+    for(let i = 0; i < toClean.length; i += 450){
+      const batch = writeBatch(db);
+      toClean.slice(i, i+450).forEach(d=>{
+        batch.update(doc(db, CONFIG.ENTRIES_COLLECTION, d.id), { waterPhotoUrl: '' });
+      });
+      await batch.commit();
+    }
+    if(!silent) showToast(`Cleaned up ${toClean.length} old photo(s)`);
+    return toClean.length;
+  } catch(err){
+    console.error('cleanupOldPhotos error:', err);
+    if(!silent) showToast('Cleanup failed — check console', true);
+    return 0;
+  }
 }
 
 // ===== LOGIN PANEL TOGGLE =====
@@ -433,6 +490,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', async (e)=>
     await populateCoffeeTypeFilter();
     await loadCoffeeNamesAdmin();
     await loadAllEntries();
+    cleanupOldPhotos(true).then(count=>{ if(count > 0) loadAllEntries(); }); // silent auto-cleanup on every admin login
   } else {
     errBox.classList.add('show');
   }
@@ -579,6 +637,58 @@ document.getElementById('editWQBtn').addEventListener('click', ()=>{
   showWQForm();
 });
 
+// ===== WATER VOLUME PHOTO PROOF (live camera capture, stored as compressed base64 in Firestore — no Firebase Storage / Blaze plan needed) =====
+let waterPhotoDataUrl = null; // compressed base64 image (jpeg), goes straight into the Firestore doc
+
+// Resize + compress an image file down to a small base64 JPEG string.
+// maxDim controls resolution, quality controls JPEG compression (0-1).
+function compressImageToBase64(file, maxDim = 480, quality = 0.55){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (ev)=>{ img.src = ev.target.result; };
+    reader.onerror = reject;
+    img.onload = ()=>{
+      let { width, height } = img;
+      if(width > height && width > maxDim){ height = Math.round(height * (maxDim/width)); width = maxDim; }
+      else if(height > maxDim){ width = Math.round(width * (maxDim/height)); height = maxDim; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('waterPhotoBtn').addEventListener('click', ()=>{
+  document.getElementById('waterPhotoInput').click();
+});
+document.getElementById('waterPhotoInput').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const compressed = await compressImageToBase64(file);
+    waterPhotoDataUrl = compressed;
+    document.getElementById('waterPhotoPreview').src = compressed;
+    document.getElementById('waterPhotoPreviewWrap').style.display = 'flex';
+  }catch(err){
+    console.error(err);
+    showToast('Could not process photo', true);
+  }
+});
+document.getElementById('removeWaterPhotoBtn').addEventListener('click', ()=>{
+  waterPhotoDataUrl = null;
+  document.getElementById('waterPhotoInput').value = '';
+  document.getElementById('waterPhotoPreviewWrap').style.display = 'none';
+});
+function resetWaterPhoto(){
+  waterPhotoDataUrl = null;
+  document.getElementById('waterPhotoInput').value = '';
+  document.getElementById('waterPhotoPreviewWrap').style.display = 'none';
+}
+
 // ===== RECIPE ENTRY =====
 let selectedMethod = "";
 document.getElementById('drinkTypeSelect').addEventListener('change', (e)=>{
@@ -611,6 +721,7 @@ document.getElementById('addEntryBtn').addEventListener('click', async ()=>{
   btn.disabled = true; btn.textContent = 'Saving...';
 
   try{
+    // waterPhotoDataUrl is already a compressed base64 JPEG string (or null) — saved directly on the Firestore doc, no Storage upload needed.
     await addDoc(collection(db, CONFIG.ENTRIES_COLLECTION), {
       branch: currentBranch,
       branchSlug: currentBranchSlug,
@@ -619,6 +730,7 @@ document.getElementById('addEntryBtn').addEventListener('click', async ()=>{
       method: selectedMethod,
       coffeeName, waterVolume, coffeeGrams, puls,
       extractionTime, extractionMl, coffeeRatio,
+      waterPhotoUrl: waterPhotoDataUrl || '',
       createdAt: serverTimestamp()
     });
     showToast('Entry added!');
@@ -627,6 +739,7 @@ document.getElementById('addEntryBtn').addEventListener('click', async ()=>{
     ['coffeeNameSelect','waterVolume','coffeeGrams','puls','extractionTime','extractionMl','coffeeRatio'].forEach(id=>{
       document.getElementById(id).value = '';
     });
+    resetWaterPhoto();
     await loadStaffAllEntries();
   } catch(err){
     showToast('Could not save entry', true);
@@ -637,6 +750,19 @@ document.getElementById('addEntryBtn').addEventListener('click', async ()=>{
 });
 
 function pillClass(method){ return 'method-' + method.replace(/\s+/g,'-'); }
+
+// ===== WATER PHOTO CELL + LIGHTBOX =====
+function photoCell(url){
+  if(!url) return '<span class="no-photo">No photo</span>';
+  return `<img src="${url}" class="photo-thumb" onclick="window.openPhotoLightbox('${url}')">`;
+}
+window.openPhotoLightbox = function(url){
+  document.getElementById('photoLightboxImg').src = url;
+  document.getElementById('photoLightbox').classList.add('show');
+};
+document.getElementById('photoLightbox').addEventListener('click', ()=>{
+  document.getElementById('photoLightbox').classList.remove('show');
+});
 
 const WQ_RANGES = {
   tds:  { min: 100, max: 120 },
@@ -656,79 +782,12 @@ function outOfRangeStyle(value, key){
 // ===== STAFF: ALL BRANCHES REPORT TABLE =====
 async function loadStaffAllEntries(){
   const tbody = document.getElementById('staffEntriesTbody');
-  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;">Loading…</td></tr>';
   try{
     const branchVal = document.getElementById('staffBranchFilter').value;
     const coffeeTypeVal = document.getElementById('staffCoffeeTypeFilter').value;
     const drinkTypeVal = document.getElementById('staffDrinkTypeFilter').value;
     const dateVal = document.getElementById('staffDateFilter').value;
-
-    const q = query(collection(db, CONFIG.ENTRIES_COLLECTION), orderBy('createdAt','desc'));
-    const snap = await getDocs(q);
-    let rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    if(branchVal){
-      rows = rows.filter(r => r.branch === branchVal);
-    }
-    if(coffeeTypeVal){
-      rows = rows.filter(r => r.coffeeName === coffeeTypeVal);
-    }
-    if(drinkTypeVal){
-      rows = rows.filter(r => r.method === drinkTypeVal);
-    }
-    if(dateVal){
-      rows = rows.filter(r => r.date === dateVal);
-    }
-
-    if(rows.length === 0){
-      tbody.innerHTML = '<tr><td colspan="13" class="empty">No entries found.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td>${r.date}</td>
-        <td>${r.branch}</td>
-        <td${outOfRangeStyle(r.tds,'tds')}>${r.tds}</td>
-        <td${outOfRangeStyle(r.ph,'ph')}>${r.ph}</td>
-        <td${outOfRangeStyle(r.temp,'temp')}>${r.temp}</td>
-        <td><span class="pill ${pillClass(r.method)}">${r.method}</span></td>
-        <td><span class="pill coffee-name">${r.coffeeName}</span></td>
-        <td>${r.waterVolume}</td>
-        <td>${r.coffeeGrams}</td>
-        <td>${r.puls || ''}</td>
-        <td>${r.extractionTime || ''}</td>
-        <td>${r.extractionMl || ''}</td>
-        <td>${r.coffeeRatio || ''}</td>
-      </tr>
-    `).join('');
-  } catch(err){
-    tbody.innerHTML = '<tr><td colspan="13" class="empty">Could not load data — check connection/setup.</td></tr>';
-    console.error(err);
-  }
-}
-
-document.getElementById('staffRefreshEntriesBtn').addEventListener('click', loadStaffAllEntries);
-document.getElementById('staffBranchFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffCoffeeTypeFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffDrinkTypeFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffDateFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffClearFilterBtn').addEventListener('click', ()=>{
-  document.getElementById('staffBranchFilter').value = '';
-  document.getElementById('staffCoffeeTypeFilter').value = '';
-  document.getElementById('staffDrinkTypeFilter').value = '';
-  document.getElementById('staffDateFilter').value = '';
-  loadStaffAllEntries();
-});
-
-// ===== ADMIN: ALL ENTRIES TABLE =====
-async function loadAllEntries(){
-  const tbody = document.getElementById('adminTbody');
-  tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;">Loading…</td></tr>';
-  try{
-    const branchVal = document.getElementById('branchFilter').value;
-    const coffeeTypeVal = document.getElementById('coffeeTypeFilter').value;
-    const drinkTypeVal = document.getElementById('drinkTypeFilter').value;
-    const dateVal = document.getElementById('dateFilter').value;
 
     const q = query(collection(db, CONFIG.ENTRIES_COLLECTION), orderBy('createdAt','desc'));
     const snap = await getDocs(q);
@@ -761,6 +820,75 @@ async function loadAllEntries(){
         <td><span class="pill ${pillClass(r.method)}">${r.method}</span></td>
         <td><span class="pill coffee-name">${r.coffeeName}</span></td>
         <td>${r.waterVolume}</td>
+        <td>${photoCell(r.waterPhotoUrl)}</td>
+        <td>${r.coffeeGrams}</td>
+        <td>${r.puls || ''}</td>
+        <td>${r.extractionTime || ''}</td>
+        <td>${r.extractionMl || ''}</td>
+        <td>${r.coffeeRatio || ''}</td>
+      </tr>
+    `).join('');
+  } catch(err){
+    tbody.innerHTML = '<tr><td colspan="14" class="empty">Could not load data — check connection/setup.</td></tr>';
+    console.error(err);
+  }
+}
+
+document.getElementById('staffRefreshEntriesBtn').addEventListener('click', loadStaffAllEntries);
+document.getElementById('staffBranchFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffCoffeeTypeFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffDrinkTypeFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffDateFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffClearFilterBtn').addEventListener('click', ()=>{
+  document.getElementById('staffBranchFilter').value = '';
+  document.getElementById('staffCoffeeTypeFilter').value = '';
+  document.getElementById('staffDrinkTypeFilter').value = '';
+  document.getElementById('staffDateFilter').value = '';
+  loadStaffAllEntries();
+});
+
+// ===== ADMIN: ALL ENTRIES TABLE =====
+async function loadAllEntries(){
+  const tbody = document.getElementById('adminTbody');
+  tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;">Loading…</td></tr>';
+  try{
+    const branchVal = document.getElementById('branchFilter').value;
+    const coffeeTypeVal = document.getElementById('coffeeTypeFilter').value;
+    const drinkTypeVal = document.getElementById('drinkTypeFilter').value;
+    const dateVal = document.getElementById('dateFilter').value;
+
+    const q = query(collection(db, CONFIG.ENTRIES_COLLECTION), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    let rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    if(branchVal){
+      rows = rows.filter(r => r.branch === branchVal);
+    }
+    if(coffeeTypeVal){
+      rows = rows.filter(r => r.coffeeName === coffeeTypeVal);
+    }
+    if(drinkTypeVal){
+      rows = rows.filter(r => r.method === drinkTypeVal);
+    }
+    if(dateVal){
+      rows = rows.filter(r => r.date === dateVal);
+    }
+
+    if(rows.length === 0){
+      tbody.innerHTML = '<tr><td colspan="15" class="empty">No entries found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.branch}</td>
+        <td${outOfRangeStyle(r.tds,'tds')}>${r.tds}</td>
+        <td${outOfRangeStyle(r.ph,'ph')}>${r.ph}</td>
+        <td${outOfRangeStyle(r.temp,'temp')}>${r.temp}</td>
+        <td><span class="pill ${pillClass(r.method)}">${r.method}</span></td>
+        <td><span class="pill coffee-name">${r.coffeeName}</span></td>
+        <td>${r.waterVolume}</td>
+        <td>${photoCell(r.waterPhotoUrl)}</td>
         <td>${r.coffeeGrams}</td>
         <td>${r.puls || ''}</td>
         <td>${r.extractionTime || ''}</td>
@@ -778,12 +906,19 @@ async function loadAllEntries(){
       });
     });
   } catch(err){
-    tbody.innerHTML = '<tr><td colspan="14" class="empty">Could not load data — check connection/setup.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="15" class="empty">Could not load data — check connection/setup.</td></tr>';
     console.error(err);
   }
 }
 
 document.getElementById('refreshEntriesBtn').addEventListener('click', loadAllEntries);
+document.getElementById('cleanupPhotosBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('cleanupPhotosBtn');
+  btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Cleaning…';
+  await cleanupOldPhotos(false);
+  await loadAllEntries();
+  btn.disabled = false; btn.textContent = orig;
+});
 document.getElementById('branchFilter').addEventListener('change', loadAllEntries);
 document.getElementById('coffeeTypeFilter').addEventListener('change', loadAllEntries);
 document.getElementById('drinkTypeFilter').addEventListener('change', loadAllEntries);
