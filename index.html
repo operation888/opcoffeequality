@@ -224,7 +224,7 @@
           <label>Water Volume (ml)</label>
           <div style="display:flex;gap:6px;align-items:center;">
             <input type="number" step="any" id="waterVolume" placeholder="e.g. 300" style="flex:1;">
-            <button type="button" class="secondary" id="waterPhotoBtn" title="Capture live water photo proof" style="padding:20px 24px;flex-shrink:0;">📷</button>
+            <button type="button" class="secondary" id="waterPhotoBtn" title="Capture live water photo proof" style="padding:10px 12px;flex-shrink:0;">📷</button>
           </div>
           <input type="file" accept="image/*" capture="environment" id="waterPhotoInput" style="display:none;">
           <div id="waterPhotoPreviewWrap" style="display:none;align-items:center;gap:8px;margin-top:8px;">
@@ -642,7 +642,7 @@ let waterPhotoDataUrl = null; // compressed base64 image (jpeg), goes straight i
 
 // Resize + compress an image file down to a small base64 JPEG string.
 // maxDim controls resolution, quality controls JPEG compression (0-1).
-function compressImageToBase64(file, maxDim = 480, quality = 0.55){
+function compressImageToBase64(file, maxDim = 720, quality = 0.7){
   return new Promise((resolve, reject)=>{
     const img = new Image();
     const reader = new FileReader();
