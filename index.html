@@ -269,7 +269,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Date</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Photo</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th></tr>
+            <tr><th>Date</th><th>Submit Time</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Photo</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th></tr>
           </thead>
           <tbody id="staffEntriesTbody"></tbody>
         </table>
@@ -326,7 +326,7 @@
     <div class="table-wrap" style="margin:0 16px;">
       <table>
         <thead>
-          <tr><th>Date</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Photo</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th><th></th></tr>
+          <tr><th>Date</th><th>Submit Time</th><th>Branch</th><th>TDS</th><th>pH</th><th>Temp</th><th>Drink Type</th><th>Coffee</th><th>Water</th><th>Photo</th><th>Coffee g</th><th>Puls</th><th>Time</th><th>Extr. ml</th><th>Ratio</th><th></th></tr>
         </thead>
         <tbody id="adminTbody"></tbody>
       </table>
@@ -385,6 +385,10 @@ function todayStr(){
   const d = new Date();
   const localMidnightAdjusted = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
   return localMidnightAdjusted.toISOString().slice(0,10);
+}
+function timeStr(){
+  const d = new Date();
+  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 }
 function daysAgoStr(days){
   const d = new Date();
@@ -726,6 +730,7 @@ document.getElementById('addEntryBtn').addEventListener('click', async ()=>{
       branch: currentBranch,
       branchSlug: currentBranchSlug,
       date: todayStr(),
+      submitTime: timeStr(),
       tds: todayWQ.tds, ph: todayWQ.ph, temp: todayWQ.temp,
       method: selectedMethod,
       coffeeName, waterVolume, coffeeGrams, puls,
@@ -782,80 +787,12 @@ function outOfRangeStyle(value, key){
 // ===== STAFF: ALL BRANCHES REPORT TABLE =====
 async function loadStaffAllEntries(){
   const tbody = document.getElementById('staffEntriesTbody');
-  tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;">Loading…</td></tr>';
   try{
     const branchVal = document.getElementById('staffBranchFilter').value;
     const coffeeTypeVal = document.getElementById('staffCoffeeTypeFilter').value;
     const drinkTypeVal = document.getElementById('staffDrinkTypeFilter').value;
     const dateVal = document.getElementById('staffDateFilter').value;
-
-    const q = query(collection(db, CONFIG.ENTRIES_COLLECTION), orderBy('createdAt','desc'));
-    const snap = await getDocs(q);
-    let rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    if(branchVal){
-      rows = rows.filter(r => r.branch === branchVal);
-    }
-    if(coffeeTypeVal){
-      rows = rows.filter(r => r.coffeeName === coffeeTypeVal);
-    }
-    if(drinkTypeVal){
-      rows = rows.filter(r => r.method === drinkTypeVal);
-    }
-    if(dateVal){
-      rows = rows.filter(r => r.date === dateVal);
-    }
-
-    if(rows.length === 0){
-      tbody.innerHTML = '<tr><td colspan="14" class="empty">No entries found.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td>${r.date}</td>
-        <td>${r.branch}</td>
-        <td${outOfRangeStyle(r.tds,'tds')}>${r.tds}</td>
-        <td${outOfRangeStyle(r.ph,'ph')}>${r.ph}</td>
-        <td${outOfRangeStyle(r.temp,'temp')}>${r.temp}</td>
-        <td><span class="pill ${pillClass(r.method)}">${r.method}</span></td>
-        <td><span class="pill coffee-name">${r.coffeeName}</span></td>
-        <td>${r.waterVolume}</td>
-        <td>${photoCell(r.waterPhotoUrl)}</td>
-        <td>${r.coffeeGrams}</td>
-        <td>${r.puls || ''}</td>
-        <td>${r.extractionTime || ''}</td>
-        <td>${r.extractionMl || ''}</td>
-        <td>${r.coffeeRatio || ''}</td>
-      </tr>
-    `).join('');
-  } catch(err){
-    tbody.innerHTML = '<tr><td colspan="14" class="empty">Could not load data — check connection/setup.</td></tr>';
-    console.error(err);
-  }
-}
-
-document.getElementById('staffRefreshEntriesBtn').addEventListener('click', loadStaffAllEntries);
-document.getElementById('staffBranchFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffCoffeeTypeFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffDrinkTypeFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffDateFilter').addEventListener('change', loadStaffAllEntries);
-document.getElementById('staffClearFilterBtn').addEventListener('click', ()=>{
-  document.getElementById('staffBranchFilter').value = '';
-  document.getElementById('staffCoffeeTypeFilter').value = '';
-  document.getElementById('staffDrinkTypeFilter').value = '';
-  document.getElementById('staffDateFilter').value = '';
-  loadStaffAllEntries();
-});
-
-// ===== ADMIN: ALL ENTRIES TABLE =====
-async function loadAllEntries(){
-  const tbody = document.getElementById('adminTbody');
-  tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;">Loading…</td></tr>';
-  try{
-    const branchVal = document.getElementById('branchFilter').value;
-    const coffeeTypeVal = document.getElementById('coffeeTypeFilter').value;
-    const drinkTypeVal = document.getElementById('drinkTypeFilter').value;
-    const dateVal = document.getElementById('dateFilter').value;
 
     const q = query(collection(db, CONFIG.ENTRIES_COLLECTION), orderBy('createdAt','desc'));
     const snap = await getDocs(q);
@@ -881,6 +818,76 @@ async function loadAllEntries(){
     tbody.innerHTML = rows.map(r => `
       <tr>
         <td>${r.date}</td>
+        <td>${r.submitTime || ''}</td>
+        <td>${r.branch}</td>
+        <td${outOfRangeStyle(r.tds,'tds')}>${r.tds}</td>
+        <td${outOfRangeStyle(r.ph,'ph')}>${r.ph}</td>
+        <td${outOfRangeStyle(r.temp,'temp')}>${r.temp}</td>
+        <td><span class="pill ${pillClass(r.method)}">${r.method}</span></td>
+        <td><span class="pill coffee-name">${r.coffeeName}</span></td>
+        <td>${r.waterVolume}</td>
+        <td>${photoCell(r.waterPhotoUrl)}</td>
+        <td>${r.coffeeGrams}</td>
+        <td>${r.puls || ''}</td>
+        <td>${r.extractionTime || ''}</td>
+        <td>${r.extractionMl || ''}</td>
+        <td>${r.coffeeRatio || ''}</td>
+      </tr>
+    `).join('');
+  } catch(err){
+    tbody.innerHTML = '<tr><td colspan="15" class="empty">Could not load data — check connection/setup.</td></tr>';
+    console.error(err);
+  }
+}
+
+document.getElementById('staffRefreshEntriesBtn').addEventListener('click', loadStaffAllEntries);
+document.getElementById('staffBranchFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffCoffeeTypeFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffDrinkTypeFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffDateFilter').addEventListener('change', loadStaffAllEntries);
+document.getElementById('staffClearFilterBtn').addEventListener('click', ()=>{
+  document.getElementById('staffBranchFilter').value = '';
+  document.getElementById('staffCoffeeTypeFilter').value = '';
+  document.getElementById('staffDrinkTypeFilter').value = '';
+  document.getElementById('staffDateFilter').value = '';
+  loadStaffAllEntries();
+});
+
+// ===== ADMIN: ALL ENTRIES TABLE =====
+async function loadAllEntries(){
+  const tbody = document.getElementById('adminTbody');
+  tbody.innerHTML = '<tr><td colspan="16" style="text-align:center;">Loading…</td></tr>';
+  try{
+    const branchVal = document.getElementById('branchFilter').value;
+    const coffeeTypeVal = document.getElementById('coffeeTypeFilter').value;
+    const drinkTypeVal = document.getElementById('drinkTypeFilter').value;
+    const dateVal = document.getElementById('dateFilter').value;
+
+    const q = query(collection(db, CONFIG.ENTRIES_COLLECTION), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    let rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    if(branchVal){
+      rows = rows.filter(r => r.branch === branchVal);
+    }
+    if(coffeeTypeVal){
+      rows = rows.filter(r => r.coffeeName === coffeeTypeVal);
+    }
+    if(drinkTypeVal){
+      rows = rows.filter(r => r.method === drinkTypeVal);
+    }
+    if(dateVal){
+      rows = rows.filter(r => r.date === dateVal);
+    }
+
+    if(rows.length === 0){
+      tbody.innerHTML = '<tr><td colspan="16" class="empty">No entries found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.submitTime || ''}</td>
         <td>${r.branch}</td>
         <td${outOfRangeStyle(r.tds,'tds')}>${r.tds}</td>
         <td${outOfRangeStyle(r.ph,'ph')}>${r.ph}</td>
@@ -906,7 +913,7 @@ async function loadAllEntries(){
       });
     });
   } catch(err){
-    tbody.innerHTML = '<tr><td colspan="15" class="empty">Could not load data — check connection/setup.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="16" class="empty">Could not load data — check connection/setup.</td></tr>';
     console.error(err);
   }
 }
